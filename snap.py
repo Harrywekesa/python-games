@@ -6,7 +6,7 @@
 
 import random
 import time
-from tkinter import Tk, Canvas, NORMAL, HIDDEN
+from tkinter import Tk, Canvas, NORMAL, HIDDEN, CHORD, ARC
 from turtle import Shape   #HIDDEN lets you hide each shape until you want to show it with 
 #NORMAL—otherwise all the shapes will appear on the screen at the start of the game
 
@@ -66,12 +66,57 @@ square = c.create_rectangle(35, 20, 365, 350, outline = 'violet', fill = 'violet
 shapes.append(square)
 c.pack()
 
+arc = c.create_arc(-235, 120, 365, 370, outline = 'black', fill = 'black', state = HIDDEN)
+shapes.append(arc)
+arc = c.create_arc(-235, 120, 365, 370, outline = 'red', fill = 'red', state = HIDDEN, style = ARC)
+shapes.append(arc)
+arc = c.create_arc(-235, 120, 365, 370, outline = 'green', fill = 'green', state = HIDDEN, style = CHORD)
+shapes.append(arc)
+arc = c.create_arc(-235, 120, 365, 370, outline = 'blue', fill = 'blue', state = HIDDEN)
+shapes.append(arc)
+arc = c.create_arc(-235, 120, 365, 370, outline = 'orange', fill = 'orange', state = HIDDEN, style = ARC)
+shapes.append(arc)
+arc = c.create_arc(-235, 120, 365, 370, outline = 'indigo', fill = 'indigo', state = HIDDEN, style = CHORD)
+shapes.append(arc)
+arc = c.create_arc(-235, 120, 365, 370, outline = 'violet', fill = 'violet', state = HIDDEN)
+shapes.append(arc)
+
+line = c.create_line(35, 200, 365, 200, fill = 'black', state  =HIDDEN)
+shapes.append(line)
+line = c.create_line(35, 20, 365, 350, fill = 'red', state  =HIDDEN)
+shapes.append(line)
+line = c.create_line(35, 200, 365, 200, fill = 'green', state  =HIDDEN)
+shapes.append(line)
+line = c.create_line(35, 20, 365, 350, fill = 'blue', state  =HIDDEN)
+shapes.append(line)
+line = c.create_line(35, 200, 365, 200, fill = 'orange', state  =HIDDEN)
+shapes.append(line)
+line = c.create_line(35, 20, 365, 350, fill = 'indigo', state  =HIDDEN)
+shapes.append(line)
+line = c.create_line(35, 200, 365, 200, fill = 'violet', state  =HIDDEN)
+shapes.append(line)
+
+polygon  = c.create_polygon(35, 200, 365, 200, 200, 350, outline = 'black', fill = 'black', state = HIDDEN)
+shapes.append(polygon)
+polygon  = c.create_polygon(35, 200, 365, 200, 200, 350, outline = 'red', fill = 'red', state = HIDDEN)
+shapes.append(polygon)
+polygon  = c.create_polygon(35, 200, 365, 200, 200, 350, outline = 'green', fill = 'green', state = HIDDEN)
+shapes.append(polygon)
+polygon  = c.create_polygon(35, 200, 365, 200, 200, 350, outline = 'blue', fill = 'blue', state = HIDDEN)
+shapes.append(polygon)
+polygon  = c.create_polygon(35, 200, 365, 200, 200, 350, outline = 'indigo', fill = 'indigo', state = HIDDEN)
+shapes.append(polygon)
+polygon  = c.create_polygon(35, 200, 365, 200, 200, 350, outline = 'orange', fill = 'orange', state = HIDDEN)
+shapes.append(polygon)
+polygon  = c.create_polygon(35, 200, 365, 200, 200, 350, outline = 'violet', fill = 'violet', state = HIDDEN)
+shapes.append(polygon)
+
 #To ensure that the shapes don’t appear in the same order each time, you need to shuffle them
 random.shuffle(shapes)
 
 shape = None
-previous_color = " "
-current_color = " "
+previous_color = "a" #'a' and 'b' prevent early cheating before the images are displayed
+current_color = "b"
 player1_score = 0
 player2_score = 0
 
@@ -89,9 +134,9 @@ def next_shape():
         shape = shapes.pop(0) #Get the next shape if there are any shapes left.
         c.itemconfigure(shape, state = NORMAL) #Make the new shape visible
         current_color = c.itemcget(shape, 'fill') #Assign current color to the color of the new shape
-        root.after(1000, next_shape)
+        root.after(800, next_shape)
     else:
-        c.unbind('q')#hese lines stop the program responding to snaps after the game is over.
+        c.unbind('q')#These lines stop the program responding to snaps after the game is over.
         c.unbind('p')
         if player1_score > player2_score:
             c.create_text(200, 200, text='WINNER : Player 1')
@@ -105,6 +150,7 @@ def snap(event):
     global shape
     global player1_score
     global player2_score
+    global previous_color
     valid = False
     
     c.delete(shape)
@@ -115,15 +161,18 @@ def snap(event):
     if valid:
         if event.char == 'q':
             player1_score += 1
+            shape = c.create_text(200, 200, text = 'SNAP! Player 1, You score 1 point')
         else:
             player2_score += 1
-        shape = c.create_text(200, 200, text = 'SNAP! You score 1 point') #Shown when the player snaps the wrong time
+            shape = c.create_text(200, 200, text = 'SNAP! Player 2, You score 1 point') 
+        previous_color = ' '
     else:
         if event.char == 'p':
             player1_score -= 1
+            shape = c.create_text(200, 200, text = 'SNAP! Player 1, Wrong answer! You lose a point')
         else:
             player2_score -= 1
-        shape = c.create_text(200, 200, text = 'SNAP! Wrong answer! You lose a point')
+            shape = c.create_text(200, 200, text = 'SNAP! Player 2, Wrong answer! You lose a point')#Shown when the player snaps the wrong time
 #create a 3-second delay before the first shape appears. This gives the player time to
 #find the Tkinter window in case it’s hidden behind other windows on the desktop
 root.after(3000, next_shape) #The program waits for 3,000 milliseconds, or 3 seconds before showing the next shape.
@@ -135,7 +184,7 @@ root.mainloop()
 
 c.pack()
 root.update_idletasks() #This line forces the program to update the GUI with the snap message immediately.
-time.sleep(1) #Wait  1second for the players to read the message
+time.sleep(2) #Wait  1second for the players to read the message
         
         
 
